@@ -1,5 +1,11 @@
 """Data models for Ableton MCP Server."""
 
+from ..utils.validation import (
+    validate_clip_index,
+    validate_note_data,
+    validate_tempo,
+    validate_track_index,
+)
 from .ableton_models import (
     BrowserItem,
     ClipInfo,
@@ -13,10 +19,6 @@ from .ableton_models import (
     Note,
     SessionInfo,
     TrackInfo,
-    validate_clip_index,
-    validate_note_data,
-    validate_tempo,
-    validate_track_index,
 )
 from .config import (
     DEFAULT_CONFIG,

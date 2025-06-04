@@ -1,11 +1,11 @@
 """Playback control tools for Ableton MCP."""
 
-import logging
 from mcp.server.fastmcp import Context
 
 from ..core import get_ableton_connection
+from ..utils.logging import get_logger
 
-logger = logging.getLogger("AbletonMCPServer")
+logger = get_logger("AbletonMCPServer")
 
 
 def start_playback(ctx: Context) -> str:

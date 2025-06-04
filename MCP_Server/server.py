@@ -1,34 +1,35 @@
 # ableton_mcp_server.py
-from mcp.server.fastmcp import FastMCP, Context
 import json
 import logging
 from contextlib import asynccontextmanager
-from typing import AsyncIterator, Dict, Any, List, Union
+from typing import Any, AsyncIterator, Dict, List, Union
 
-from .core import get_ableton_connection, disconnect_global_connection
+from mcp.server.fastmcp import Context, FastMCP
+
+from .core import disconnect_global_connection, get_ableton_connection
 from .tools import (
+    add_notes_to_clip,
+    create_clip,
+    create_midi_track,
+    fire_clip,
+    get_browser_items_at_path,
+    get_browser_tree,
     get_session_info,
     get_track_info,
-    create_midi_track,
-    set_track_name,
-    set_tempo,
-    create_clip,
-    add_notes_to_clip,
-    set_clip_name,
-    fire_clip,
-    stop_clip,
-    start_playback,
-    stop_playback,
+    load_drum_kit,
     load_instrument_or_effect,
-    get_browser_tree,
-    get_browser_items_at_path,
-    load_drum_kit
+    set_clip_name,
+    set_tempo,
+    set_track_name,
+    start_playback,
+    stop_clip,
+    stop_playback,
 )
 
 # Configure logging
-logging.basicConfig(level=logging.INFO,
-                    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
-logger = logging.getLogger("AbletonMCPServer")
+from .utils.logging import setup_logging
+
+logger = setup_logging()
 
 
 @asynccontextmanager
@@ -54,7 +55,7 @@ async def server_lifespan(server: FastMCP) -> AsyncIterator[Dict[str, Any]]:
 mcp = FastMCP(
     "AbletonMCP",
     description="Ableton Live integration through the Model Context Protocol",
-    lifespan=server_lifespan
+    lifespan=server_lifespan,
 )
 
 
@@ -90,7 +91,9 @@ def set_tempo_tool(ctx: Context, tempo: float) -> str:
 
 
 @mcp.tool()
-def create_clip_tool(ctx: Context, track_index: int, clip_index: int, length: float = 4.0) -> str:
+def create_clip_tool(
+    ctx: Context, track_index: int, clip_index: int, length: float = 4.0
+) -> str:
     """Create a new MIDI clip in the specified track and clip slot."""
     return create_clip(ctx, track_index, clip_index, length)
 
@@ -100,14 +103,16 @@ def add_notes_to_clip_tool(
     ctx: Context,
     track_index: int,
     clip_index: int,
-    notes: List[Dict[str, Union[int, float, bool]]]
+    notes: List[Dict[str, Union[int, float, bool]]],
 ) -> str:
     """Add MIDI notes to a clip."""
     return add_notes_to_clip(ctx, track_index, clip_index, notes)
 
 
 @mcp.tool()
-def set_clip_name_tool(ctx: Context, track_index: int, clip_index: int, name: str) -> str:
+def set_clip_name_tool(
+    ctx: Context, track_index: int, clip_index: int, name: str
+) -> str:
     """Set the name of a clip."""
     return set_clip_name(ctx, track_index, clip_index, name)
 
@@ -155,7 +160,9 @@ def get_browser_items_at_path_tool(ctx: Context, path: str) -> str:
 
 
 @mcp.tool()
-def load_drum_kit_tool(ctx: Context, track_index: int, rack_uri: str, kit_path: str) -> str:
+def load_drum_kit_tool(
+    ctx: Context, track_index: int, rack_uri: str, kit_path: str
+) -> str:
     """Load a drum rack and then load a specific drum kit into it."""
     return load_drum_kit(ctx, track_index, rack_uri, kit_path)
 

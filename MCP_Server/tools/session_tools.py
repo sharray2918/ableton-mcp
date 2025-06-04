@@ -1,13 +1,14 @@
 """Session and track management tools for Ableton MCP."""
 
 import json
-import logging
+from typing import Dict, List, Union
+
 from mcp.server.fastmcp import Context
-from typing import List, Dict, Union
 
 from ..core import get_ableton_connection
+from ..utils.logging import get_logger
 
-logger = logging.getLogger("AbletonMCPServer")
+logger = get_logger("AbletonMCPServer")
 
 
 def get_session_info(ctx: Context) -> str:
@@ -63,7 +64,9 @@ def set_track_name(ctx: Context, track_index: int, name: str) -> str:
     """
     try:
         ableton = get_ableton_connection()
-        result = ableton.send_command("set_track_name", {"track_index": track_index, "name": name})
+        result = ableton.send_command(
+            "set_track_name", {"track_index": track_index, "name": name}
+        )
         return f"Renamed track to: {result.get('name', name)}"
     except Exception as e:
         logger.error(f"Error setting track name: {str(e)}")

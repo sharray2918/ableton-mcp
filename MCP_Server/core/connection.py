@@ -1,12 +1,13 @@
 """Ableton Live connection management."""
 
-import socket
 import json
-import logging
+import socket
 from dataclasses import dataclass
-from typing import Dict, Any
+from typing import Any, Dict
 
-logger = logging.getLogger("AbletonMCPServer")
+from ..utils.logging import get_logger
+
+logger = get_logger("AbletonMCPServer")
 
 
 @dataclass
@@ -53,15 +54,17 @@ class AbletonConnection:
                     chunk = sock.recv(buffer_size)
                     if not chunk:
                         if not chunks:
-                            raise Exception("Connection closed before receiving any data")
+                            raise Exception(
+                                "Connection closed before receiving any data"
+                            )
                         break
 
                     chunks.append(chunk)
 
                     # Check if we've received a complete JSON object
                     try:
-                        data = b''.join(chunks)
-                        json.loads(data.decode('utf-8'))
+                        data = b"".join(chunks)
+                        json.loads(data.decode("utf-8"))
                         logger.info(f"Received complete response ({len(data)} bytes)")
                         return data
                     except json.JSONDecodeError:
@@ -79,44 +82,53 @@ class AbletonConnection:
 
         # If we get here, we either timed out or broke out of the loop
         if chunks:
-            data = b''.join(chunks)
+            data = b"".join(chunks)
             logger.info(f"Returning data after receive completion ({len(data)} bytes)")
             try:
-                json.loads(data.decode('utf-8'))
+                json.loads(data.decode("utf-8"))
                 return data
             except json.JSONDecodeError:
                 raise Exception("Incomplete JSON response received")
         else:
             raise Exception("No data received")
 
-    def send_command(self, command_type: str, params: Dict[str, Any] = None) -> Dict[str, Any]:
+    def send_command(
+        self, command_type: str, params: Dict[str, Any] = None
+    ) -> Dict[str, Any]:
         """Send a command to Ableton and return the response"""
         if not self.sock and not self.connect():
             raise ConnectionError("Not connected to Ableton")
 
-        command = {
-            "type": command_type,
-            "params": params or {}
-        }
+        command = {"type": command_type, "params": params or {}}
 
         # Check if this is a state-modifying command
         is_modifying_command = command_type in [
-            "create_midi_track", "create_audio_track", "set_track_name",
-            "create_clip", "add_notes_to_clip", "set_clip_name",
-            "set_tempo", "fire_clip", "stop_clip", "set_device_parameter",
-            "start_playback", "stop_playback", "load_instrument_or_effect"
+            "create_midi_track",
+            "create_audio_track",
+            "set_track_name",
+            "create_clip",
+            "add_notes_to_clip",
+            "set_clip_name",
+            "set_tempo",
+            "fire_clip",
+            "stop_clip",
+            "set_device_parameter",
+            "start_playback",
+            "stop_playback",
+            "load_instrument_or_effect",
         ]
 
         try:
             logger.info(f"Sending command: {command_type} with params: {params}")
 
             # Send the command
-            self.sock.sendall(json.dumps(command).encode('utf-8'))
-            logger.info(f"Command sent, waiting for response...")
+            self.sock.sendall(json.dumps(command).encode("utf-8"))
+            logger.info("Command sent, waiting for response...")
 
             # For state-modifying commands, add a small delay to give Ableton time to process
             if is_modifying_command:
                 import time
+
                 time.sleep(0.1)  # 100ms delay
 
             # Set timeout based on command type
@@ -128,7 +140,7 @@ class AbletonConnection:
             logger.info(f"Received {len(response_data)} bytes of data")
 
             # Parse the response
-            response = json.loads(response_data.decode('utf-8'))
+            response = json.loads(response_data.decode("utf-8"))
             logger.info(f"Response parsed, status: {response.get('status', 'unknown')}")
 
             if response.get("status") == "error":
@@ -138,6 +150,7 @@ class AbletonConnection:
             # For state-modifying commands, add another small delay after receiving response
             if is_modifying_command:
                 import time
+
                 time.sleep(0.1)  # 100ms delay
 
             return response.get("result", {})
@@ -151,7 +164,7 @@ class AbletonConnection:
             raise Exception(f"Connection to Ableton lost: {str(e)}")
         except json.JSONDecodeError as e:
             logger.error(f"Invalid JSON response from Ableton: {str(e)}")
-            if 'response_data' in locals() and response_data:
+            if "response_data" in locals() and response_data:
                 logger.error(f"Raw response (first 200 bytes): {response_data[:200]}")
             self.sock = None
             raise Exception(f"Invalid response from Ableton: {str(e)}")
@@ -175,7 +188,7 @@ def get_ableton_connection():
             # We'll try to send an empty message, which should fail if the connection is dead
             # but won't affect Ableton if it's alive
             _ableton_connection.sock.settimeout(1.0)
-            _ableton_connection.sock.sendall(b'')
+            _ableton_connection.sock.sendall(b"")
             return _ableton_connection
         except Exception as e:
             logger.warning(f"Existing connection is no longer valid: {str(e)}")
@@ -191,7 +204,9 @@ def get_ableton_connection():
         max_attempts = 3
         for attempt in range(1, max_attempts + 1):
             try:
-                logger.info(f"Connecting to Ableton (attempt {attempt}/{max_attempts})...")
+                logger.info(
+                    f"Connecting to Ableton (attempt {attempt}/{max_attempts})..."
+                )
                 _ableton_connection = AbletonConnection(host="localhost", port=9877)
                 if _ableton_connection.connect():
                     logger.info("Created new persistent connection to Ableton")
@@ -218,12 +233,15 @@ def get_ableton_connection():
             # Wait before trying again, but only if we have more attempts left
             if attempt < max_attempts:
                 import time
+
                 time.sleep(1.0)
 
         # If we get here, all connection attempts failed
         if _ableton_connection is None:
             logger.error("Failed to connect to Ableton after multiple attempts")
-            raise Exception("Could not connect to Ableton. Make sure the Remote Script is running.")
+            raise Exception(
+                "Could not connect to Ableton. Make sure the Remote Script is running."
+            )
 
     return _ableton_connection
 
