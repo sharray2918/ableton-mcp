@@ -31,7 +31,7 @@ from .server import DEFAULT_PORT, SocketServer
 class AbletonMCP(ControlSurface):
     """AbletonMCP Remote Script for Ableton Live."""
 
-    def __init__(self, c_instance):
+    def __init__(self, c_instance: Any) -> None:
         """Initialize the control surface."""
         ControlSurface.__init__(self, c_instance)
         self.log_message("AbletonMCP Remote Script initializing...")
@@ -62,7 +62,7 @@ class AbletonMCP(ControlSurface):
         msg = f"AbletonMCP: Listening for commands on port {DEFAULT_PORT}"
         self.show_message(msg)
 
-    def disconnect(self):
+    def disconnect(self) -> None:
         """Called when Ableton closes or the control surface is removed."""
         self.log_message("AbletonMCP disconnecting...")
 
@@ -149,7 +149,7 @@ class AbletonMCP(ControlSurface):
         response_queue = queue.Queue()
 
         # Define a function to execute on the main thread
-        def main_thread_task():
+        def main_thread_task() -> None:
             try:
                 result = None
                 if command_type == "create_midi_track":

@@ -162,7 +162,7 @@ def load_drum_kit_tool(ctx: Context, track_index: int, rack_uri: str, kit_path: 
 
 
 # Main execution
-def main():
+def main() -> None:
     """Run the MCP server"""
     mcp.run()
 

@@ -152,7 +152,7 @@ class BrowserHandlers(BaseHandler):
             }
 
             # Helper function to process a browser item and its children
-            def process_item(item, depth=0):
+            def process_item(item: Any, depth: int = 0) -> dict[str, Any] | None:
                 if not item:
                     return None
 
@@ -369,7 +369,13 @@ class BrowserHandlers(BaseHandler):
             self.log_message(traceback.format_exc())
             raise
 
-    def _find_browser_item_by_uri(self, browser_or_item, uri, max_depth=10, current_depth=0):
+    def _find_browser_item_by_uri(
+        self,
+        browser_or_item: Any,
+        uri: str,
+        max_depth: int = 10,
+        current_depth: int = 0,
+    ) -> Any:
         """Find a browser item by its URI"""
         try:
             # Check if this is the item we're looking for
