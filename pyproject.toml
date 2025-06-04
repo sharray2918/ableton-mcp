@@ -27,6 +27,13 @@ build-backend = "setuptools.build_meta"
 [tool.setuptools]
 packages = ["MCP_Server"]
 
+[dependency-groups]
+dev = [
+    "black>=25.1.0",
+    "flake8>=7.2.0",
+    "pytest>=8.4.0",
+]
+
 [project.urls]
 "Homepage" = "https://github.com/ahujasid/ableton-mcp"
 "Bug Tracker" = "https://github.com/ahujasid/ableton-mcp/issues"
