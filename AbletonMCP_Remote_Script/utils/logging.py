@@ -1,10 +1,12 @@
 """Logging utilities for AbletonMCP Remote Script."""
 
+from typing import Any
+
 
 class RemoteScriptLogger:
     """Shared logging functionality for AbletonMCP Remote Script handlers."""
 
-    def __init__(self, control_surface):
+    def __init__(self, control_surface: Any) -> None:
         """
         Initialize the logger with a control surface.
 
@@ -13,7 +15,7 @@ class RemoteScriptLogger:
         """
         self.control_surface = control_surface
 
-    def log_message(self, message):
+    def log_message(self, message: str) -> None:
         """
         Log a message using the control surface's logging.
 
@@ -22,7 +24,7 @@ class RemoteScriptLogger:
         """
         self.control_surface.log_message(message)
 
-    def log_error(self, message, exception=None):
+    def log_error(self, message: str, exception: Exception | None = None) -> None:
         """
         Log an error message with optional exception details.
 
@@ -35,7 +37,7 @@ class RemoteScriptLogger:
         else:
             self.log_message(f"Error: {message}")
 
-    def log_debug(self, message):
+    def log_debug(self, message: str) -> None:
         """
         Log a debug message.
 
@@ -44,7 +46,7 @@ class RemoteScriptLogger:
         """
         self.log_message(f"Debug: {message}")
 
-    def log_info(self, message):
+    def log_info(self, message: str) -> None:
         """
         Log an info message.
 

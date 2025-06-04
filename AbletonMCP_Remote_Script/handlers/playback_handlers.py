@@ -1,12 +1,14 @@
 """Playback control handlers for AbletonMCP Remote Script."""
 
+from typing import Any
+
 from ..utils import BaseHandler
 
 
 class PlaybackHandlers(BaseHandler):
     """Handlers for playback-related commands."""
 
-    def start_playback(self):
+    def start_playback(self) -> dict[str, Any]:
         """Start playing the session"""
         try:
             self._song.start_playing()
@@ -17,7 +19,7 @@ class PlaybackHandlers(BaseHandler):
             self.log_message("Error starting playback: " + str(e))
             raise
 
-    def stop_playback(self):
+    def stop_playback(self) -> dict[str, Any]:
         """Stop playing the session"""
         try:
             self._song.stop_playing()

@@ -1,12 +1,14 @@
 """Clip management handlers for AbletonMCP Remote Script."""
 
+from typing import Any
+
 from ..utils import BaseHandler, validate_note_data
 
 
 class ClipHandlers(BaseHandler):
     """Handlers for clip-related commands."""
 
-    def create_clip(self, track_index, clip_index, length):
+    def create_clip(self, track_index: int, clip_index: int, length: float) -> dict[str, Any]:
         """Create a new MIDI clip in the specified track and clip slot"""
         try:
             clip_slot = self.get_clip_slot(track_index, clip_index)
@@ -24,7 +26,7 @@ class ClipHandlers(BaseHandler):
             self.log_message("Error creating clip: " + str(e))
             raise
 
-    def add_notes_to_clip(self, track_index, clip_index, notes):
+    def add_notes_to_clip(self, track_index: int, clip_index: int, notes: list[dict[str, Any]]) -> dict[str, Any]:
         """Add MIDI notes to a clip"""
         try:
             clip_slot = self.get_clip_slot(track_index, clip_index)
@@ -57,7 +59,7 @@ class ClipHandlers(BaseHandler):
             self.log_message("Error adding notes to clip: " + str(e))
             raise
 
-    def set_clip_name(self, track_index, clip_index, name):
+    def set_clip_name(self, track_index: int, clip_index: int, name: str) -> dict[str, Any]:
         """Set the name of a clip"""
         try:
             clip_slot = self.get_clip_slot(track_index, clip_index)
@@ -74,7 +76,7 @@ class ClipHandlers(BaseHandler):
             self.log_message("Error setting clip name: " + str(e))
             raise
 
-    def fire_clip(self, track_index, clip_index):
+    def fire_clip(self, track_index: int, clip_index: int) -> dict[str, Any]:
         """Fire a clip"""
         try:
             clip_slot = self.get_clip_slot(track_index, clip_index)
@@ -91,7 +93,7 @@ class ClipHandlers(BaseHandler):
             self.log_message("Error firing clip: " + str(e))
             raise
 
-    def stop_clip(self, track_index, clip_index):
+    def stop_clip(self, track_index: int, clip_index: int) -> dict[str, Any]:
         """Stop a clip"""
         try:
             clip_slot = self.get_clip_slot(track_index, clip_index)

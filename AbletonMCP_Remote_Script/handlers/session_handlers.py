@@ -1,12 +1,14 @@
 """Session and track management handlers for AbletonMCP Remote Script."""
 
+from typing import Any
+
 from ..utils import BaseHandler, validate_tempo
 
 
 class SessionHandlers(BaseHandler):
     """Handlers for session and track-related commands."""
 
-    def get_session_info(self):
+    def get_session_info(self) -> dict[str, Any]:
         """Get information about the current session"""
         try:
             result = {
@@ -26,7 +28,7 @@ class SessionHandlers(BaseHandler):
             self.log_message("Error getting session info: " + str(e))
             raise
 
-    def get_track_info(self, track_index):
+    def get_track_info(self, track_index: int) -> dict[str, Any]:
         """Get information about a track"""
         try:
             track = self.get_track(track_index)
@@ -76,7 +78,7 @@ class SessionHandlers(BaseHandler):
             self.log_message("Error getting track info: " + str(e))
             raise
 
-    def create_midi_track(self, index):
+    def create_midi_track(self, index: int) -> dict[str, Any]:
         """Create a new MIDI track at the specified index"""
         try:
             # Create the track
@@ -92,7 +94,7 @@ class SessionHandlers(BaseHandler):
             self.log_message("Error creating MIDI track: " + str(e))
             raise
 
-    def set_track_name(self, track_index, name):
+    def set_track_name(self, track_index: int, name: str) -> dict[str, Any]:
         """Set the name of a track"""
         try:
             track = self.get_track(track_index)
@@ -104,7 +106,7 @@ class SessionHandlers(BaseHandler):
             self.log_message("Error setting track name: " + str(e))
             raise
 
-    def set_tempo(self, tempo):
+    def set_tempo(self, tempo: float) -> dict[str, Any]:
         """Set the tempo of the session"""
         try:
             # Validate tempo value
@@ -118,7 +120,7 @@ class SessionHandlers(BaseHandler):
             self.log_message("Error setting tempo: " + str(e))
             raise
 
-    def _get_device_type(self, device):
+    def _get_device_type(self, device: Any) -> str:
         """Get the type of a device"""
         try:
             # Simple heuristic - in a real implementation you'd look at the device class

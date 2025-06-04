@@ -1,9 +1,10 @@
 """Error handling utilities for AbletonMCP Remote Script."""
 
 import traceback
+from typing import Any, Callable
 
 
-def handle_exception(logger, operation_name, exception):
+def handle_exception(logger: Any, operation_name: str, exception: Exception) -> dict[str, Any]:
     """
     Handle exceptions with consistent logging and error formatting.
 
@@ -22,7 +23,9 @@ def handle_exception(logger, operation_name, exception):
     return {"status": "error", "message": str(exception), "operation": operation_name}
 
 
-def safe_execute(logger, operation_name, func, *args, **kwargs):
+def safe_execute(
+    logger: Any, operation_name: str, func: Callable[..., Any], *args: Any, **kwargs: Any
+) -> tuple[bool, Any]:
     """
     Safely execute a function with error handling.
 
@@ -44,7 +47,7 @@ def safe_execute(logger, operation_name, func, *args, **kwargs):
         return False, None
 
 
-def format_error_response(message, operation=None):
+def format_error_response(message: str, operation: str | None = None) -> dict[str, Any]:
     """
     Format a consistent error response.
 
@@ -61,7 +64,7 @@ def format_error_response(message, operation=None):
     return response
 
 
-def format_success_response(result, operation=None):
+def format_success_response(result: Any, operation: str | None = None) -> dict[str, Any]:
     """
     Format a consistent success response.
 

@@ -1,7 +1,9 @@
 """Validation utilities for AbletonMCP Remote Script."""
 
+from typing import Any
 
-def validate_track_index(track_index, song):
+
+def validate_track_index(track_index: int, song: Any) -> bool:
     """
     Validate that a track index is within the valid range.
 
@@ -20,7 +22,7 @@ def validate_track_index(track_index, song):
     return True
 
 
-def validate_clip_index(clip_index, track):
+def validate_clip_index(clip_index: int, track: Any) -> bool:
     """
     Validate that a clip index is within the valid range for a track.
 
@@ -39,7 +41,7 @@ def validate_clip_index(clip_index, track):
     return True
 
 
-def validate_tempo(tempo):
+def validate_tempo(tempo: float) -> bool:
     """
     Validate that a tempo value is within reasonable range.
 
@@ -57,7 +59,7 @@ def validate_tempo(tempo):
     return True
 
 
-def validate_clip_length(length):
+def validate_clip_length(length: float) -> bool:
     """
     Validate that a clip length is positive.
 
@@ -75,7 +77,7 @@ def validate_clip_length(length):
     return True
 
 
-def validate_note_data(note):
+def validate_note_data(note: dict[str, Any]) -> bool:
     """
     Validate note data structure.
 

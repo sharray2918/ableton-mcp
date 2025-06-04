@@ -9,7 +9,7 @@ from ..utils import BaseHandler
 class BrowserHandlers(BaseHandler):
     """Handlers for browser-related commands."""
 
-    def get_browser_item(self, uri, path):
+    def get_browser_item(self, uri: str | None, path: str | None) -> dict[str, Any]:
         """Get a browser item by URI or path"""
         try:
             # Access the application's browser instance instead of creating a new one
@@ -89,7 +89,7 @@ class BrowserHandlers(BaseHandler):
             self.log_message(traceback.format_exc())
             raise
 
-    def load_browser_item(self, track_index, item_uri):
+    def load_browser_item(self, track_index: int, item_uri: str) -> dict[str, Any]:
         """Load a browser item onto a track by its URI"""
         try:
             track = self.get_track(track_index)
@@ -121,7 +121,7 @@ class BrowserHandlers(BaseHandler):
             self.log_message(traceback.format_exc())
             raise
 
-    def get_browser_tree(self, category_type="all"):
+    def get_browser_tree(self, category_type: str = "all") -> dict[str, Any]:
         """
         Get a simplified tree of browser categories.
 
@@ -244,7 +244,7 @@ class BrowserHandlers(BaseHandler):
             self.log_message(traceback.format_exc())
             raise
 
-    def get_browser_items_at_path(self, path):
+    def get_browser_items_at_path(self, path: str) -> dict[str, Any]:
         """
         Get browser items at a specific path.
 

@@ -1,5 +1,8 @@
 """Base handler class for AbletonMCP Remote Script handlers."""
 
+from collections.abc import Callable
+from typing import Any
+
 from .error_handling import handle_exception, safe_execute
 from .logging import RemoteScriptLogger
 from .validation import validate_clip_index, validate_track_index
@@ -8,7 +11,7 @@ from .validation import validate_clip_index, validate_track_index
 class BaseHandler:
     """Base class for all AbletonMCP Remote Script handlers."""
 
-    def __init__(self, control_surface):
+    def __init__(self, control_surface: Any) -> None:
         """
         Initialize the handler with a control surface.
 
@@ -19,7 +22,7 @@ class BaseHandler:
         self._song = control_surface._song
         self.logger = RemoteScriptLogger(control_surface)
 
-    def log_message(self, message):
+    def log_message(self, message: str) -> None:
         """
         Log a message using the control surface's logging.
 
@@ -28,7 +31,7 @@ class BaseHandler:
         """
         self.logger.log_message(message)
 
-    def log_error(self, message, exception=None):
+    def log_error(self, message: str, exception: Exception | None = None) -> None:
         """
         Log an error message with optional exception details.
 
@@ -38,7 +41,7 @@ class BaseHandler:
         """
         self.logger.log_error(message, exception)
 
-    def handle_exception(self, operation_name, exception):
+    def handle_exception(self, operation_name: str, exception: Exception) -> dict[str, Any]:
         """
         Handle exceptions with consistent logging and error formatting.
 
@@ -51,7 +54,7 @@ class BaseHandler:
         """
         return handle_exception(self.logger, operation_name, exception)
 
-    def safe_execute(self, operation_name, func, *args, **kwargs):
+    def safe_execute(self, operation_name: str, func: Any, *args: Any, **kwargs: Any) -> tuple[bool, Any]:
         """
         Safely execute a function with error handling.
 
@@ -66,7 +69,7 @@ class BaseHandler:
         """
         return safe_execute(self.logger, operation_name, func, *args, **kwargs)
 
-    def validate_track_index(self, track_index):
+    def validate_track_index(self, track_index: int) -> bool:
         """
         Validate that a track index is within the valid range.
 
@@ -81,7 +84,7 @@ class BaseHandler:
         """
         return validate_track_index(track_index, self._song)
 
-    def validate_clip_index(self, clip_index, track):
+    def validate_clip_index(self, clip_index: int, track: Any) -> bool:
         """
         Validate that a clip index is within the valid range for a track.
 
@@ -97,7 +100,7 @@ class BaseHandler:
         """
         return validate_clip_index(clip_index, track)
 
-    def get_track(self, track_index):
+    def get_track(self, track_index: int) -> Any:
         """
         Get a track by index with validation.
 
@@ -113,7 +116,7 @@ class BaseHandler:
         self.validate_track_index(track_index)
         return self._song.tracks[track_index]
 
-    def get_clip_slot(self, track_index, clip_index):
+    def get_clip_slot(self, track_index: int, clip_index: int) -> Any:
         """
         Get a clip slot by track and clip index with validation.
 
