@@ -22,13 +22,9 @@ class ServerConfig:
         if self.timeout <= 0:
             raise ValueError(f"Timeout must be positive, got {self.timeout}")
         if self.max_retries < 0:
-            raise ValueError(
-                f"Max retries must be non-negative, got {self.max_retries}"
-            )
+            raise ValueError(f"Max retries must be non-negative, got {self.max_retries}")
         if self.retry_delay < 0:
-            raise ValueError(
-                f"Retry delay must be non-negative, got {self.retry_delay}"
-            )
+            raise ValueError(f"Retry delay must be non-negative, got {self.retry_delay}")
         if self.buffer_size <= 0:
             raise ValueError(f"Buffer size must be positive, got {self.buffer_size}")
 
@@ -40,7 +36,7 @@ class LogConfig:
     level: str = "INFO"
     format: str = "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
     enable_file_logging: bool = False
-    log_file_path: Optional[str] = None
+    log_file_path: str | None = None
     max_log_file_size: int = 10 * 1024 * 1024  # 10MB
     backup_count: int = 5
 

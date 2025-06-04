@@ -10,9 +10,7 @@ from ..utils.logging import get_logger
 logger = get_logger("AbletonMCPServer")
 
 
-def create_clip(
-    ctx: Context, track_index: int, clip_index: int, length: float = 4.0
-) -> str:
+def create_clip(ctx: Context, track_index: int, clip_index: int, length: float = 4.0) -> str:
     """
     Create a new MIDI clip in the specified track and clip slot.
 
@@ -37,7 +35,7 @@ def add_notes_to_clip(
     ctx: Context,
     track_index: int,
     clip_index: int,
-    notes: List[Dict[str, Union[int, float, bool]]],
+    notes: list[dict[str, int | float | bool]],
 ) -> str:
     """
     Add MIDI notes to a clip.
@@ -90,9 +88,7 @@ def fire_clip(ctx: Context, track_index: int, clip_index: int) -> str:
     """
     try:
         ableton = get_ableton_connection()
-        result = ableton.send_command(
-            "fire_clip", {"track_index": track_index, "clip_index": clip_index}
-        )
+        result = ableton.send_command("fire_clip", {"track_index": track_index, "clip_index": clip_index})
         return f"Started playing clip at track {track_index}, slot {clip_index}"
     except Exception as e:
         logger.error(f"Error firing clip: {str(e)}")
@@ -109,9 +105,7 @@ def stop_clip(ctx: Context, track_index: int, clip_index: int) -> str:
     """
     try:
         ableton = get_ableton_connection()
-        result = ableton.send_command(
-            "stop_clip", {"track_index": track_index, "clip_index": clip_index}
-        )
+        result = ableton.send_command("stop_clip", {"track_index": track_index, "clip_index": clip_index})
         return f"Stopped clip at track {track_index}, slot {clip_index}"
     except Exception as e:
         logger.error(f"Error stopping clip: {str(e)}")

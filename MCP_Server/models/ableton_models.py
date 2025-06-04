@@ -53,7 +53,7 @@ class Note:
         return (self.pitch, self.start_time, self.duration, self.velocity, self.mute)
 
     @classmethod
-    def from_dict(cls, data: Dict[str, Any]) -> "Note":
+    def from_dict(cls, data: dict[str, Any]) -> "Note":
         """Create Note from dictionary."""
         return cls(
             pitch=data.get("pitch", 60),
@@ -130,7 +130,7 @@ class ClipSlotInfo:
 
     index: int
     has_clip: bool
-    clip: Optional[ClipInfo] = None
+    clip: ClipInfo | None = None
 
 
 @dataclass
@@ -146,8 +146,8 @@ class TrackInfo:
     arm: bool = False
     volume: float = 0.85
     panning: float = 0.0
-    clip_slots: List[ClipSlotInfo] = None
-    devices: List[DeviceInfo] = None
+    clip_slots: list[ClipSlotInfo] = None
+    devices: list[DeviceInfo] = None
 
     def __post_init__(self):
         if self.clip_slots is None:
@@ -197,12 +197,12 @@ class BrowserItem:
     """Browser item data model."""
 
     name: str
-    uri: Optional[str] = None
-    path: Optional[str] = None
+    uri: str | None = None
+    path: str | None = None
     is_folder: bool = False
     is_device: bool = False
     is_loadable: bool = False
-    children: List["BrowserItem"] = None
+    children: list["BrowserItem"] = None
 
     def __post_init__(self):
         if self.children is None:
@@ -225,18 +225,18 @@ class CommandRequest:
     """Command request data model."""
 
     command_type: CommandType
-    params: Dict[str, Any] = None
+    params: dict[str, Any] = None
 
     def __post_init__(self):
         if self.params is None:
             self.params = {}
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> dict[str, Any]:
         """Convert to dictionary format for JSON serialization."""
         return {"type": self.command_type.value, "params": self.params}
 
     @classmethod
-    def from_dict(cls, data: Dict[str, Any]) -> "CommandRequest":
+    def from_dict(cls, data: dict[str, Any]) -> "CommandRequest":
         """Create CommandRequest from dictionary."""
         command_type_str = data.get("type", "")
         try:
@@ -252,10 +252,10 @@ class CommandResponse:
     """Command response data model."""
 
     status: str
-    result: Optional[Dict[str, Any]] = None
-    message: Optional[str] = None
+    result: dict[str, Any] | None = None
+    message: str | None = None
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> dict[str, Any]:
         """Convert to dictionary format for JSON serialization."""
         response = {"status": self.status}
         if self.result is not None:
@@ -265,7 +265,7 @@ class CommandResponse:
         return response
 
     @classmethod
-    def success(cls, result: Dict[str, Any] = None) -> "CommandResponse":
+    def success(cls, result: dict[str, Any] = None) -> "CommandResponse":
         """Create a success response."""
         return cls(status="success", result=result or {})
 
@@ -275,7 +275,7 @@ class CommandResponse:
         return cls(status="error", message=message)
 
     @classmethod
-    def from_dict(cls, data: Dict[str, Any]) -> "CommandResponse":
+    def from_dict(cls, data: dict[str, Any]) -> "CommandResponse":
         """Create CommandResponse from dictionary."""
         return cls(
             status=data.get("status", "unknown"),

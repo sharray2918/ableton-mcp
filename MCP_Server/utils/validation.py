@@ -3,7 +3,7 @@
 from typing import Any, Dict
 
 
-def validate_note_data(note_data: Dict[str, Any]) -> bool:
+def validate_note_data(note_data: dict[str, Any]) -> bool:
     """Validate note data structure."""
     required_fields = ["pitch", "start_time", "duration"]
     return all(field in note_data for field in required_fields)
