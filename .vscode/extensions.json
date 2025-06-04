@@ -1,0 +1,16 @@
+{
+  "recommendations": [
+    "ms-python.python",
+    "ms-python.black-formatter",
+    "ms-python.isort",
+    "ms-python.flake8",
+    "ms-python.mypy-type-checker",
+    "charliermarsh.ruff",
+    "ms-python.pylint",
+    "esbenp.prettier-vscode",
+    "redhat.vscode-yaml",
+    "ms-vscode.makefile-tools",
+    "github.vscode-github-actions",
+    "ms-python.debugpy"
+  ]
+}
