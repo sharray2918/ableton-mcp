@@ -1,6 +1,6 @@
 """Data validation utilities for Ableton MCP Server."""
 
-from typing import Any, Dict
+from typing import Any
 
 
 def validate_note_data(note_data: dict[str, Any]) -> bool:

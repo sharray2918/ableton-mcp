@@ -20,8 +20,7 @@ class ClipHandlers(BaseHandler):
             # Create the clip
             clip_slot.create_clip(length)
 
-            result = {"name": clip_slot.clip.name, "length": clip_slot.clip.length}
-            return result
+            return {"name": clip_slot.clip.name, "length": clip_slot.clip.length}
         except Exception as e:
             self.log_message("Error creating clip: " + str(e))
             raise
@@ -53,8 +52,7 @@ class ClipHandlers(BaseHandler):
             # Add the notes
             clip.set_notes(tuple(live_notes))
 
-            result = {"note_count": len(notes)}
-            return result
+            return {"note_count": len(notes)}
         except Exception as e:
             self.log_message("Error adding notes to clip: " + str(e))
             raise
@@ -70,8 +68,7 @@ class ClipHandlers(BaseHandler):
             clip = clip_slot.clip
             clip.name = name
 
-            result = {"name": clip.name}
-            return result
+            return {"name": clip.name}
         except Exception as e:
             self.log_message("Error setting clip name: " + str(e))
             raise
@@ -87,8 +84,7 @@ class ClipHandlers(BaseHandler):
             # Fire the clip
             clip_slot.fire()
 
-            result = {"fired": True, "name": clip_slot.clip.name}
-            return result
+            return {"fired": True, "name": clip_slot.clip.name}
         except Exception as e:
             self.log_message("Error firing clip: " + str(e))
             raise
@@ -104,8 +100,7 @@ class ClipHandlers(BaseHandler):
             # Stop the clip
             clip_slot.stop()
 
-            result = {"stopped": True, "name": clip_slot.clip.name}
-            return result
+            return {"stopped": True, "name": clip_slot.clip.name}
         except Exception as e:
             self.log_message("Error stopping clip: " + str(e))
             raise

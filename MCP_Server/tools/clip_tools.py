@@ -1,7 +1,5 @@
 """Clip management tools for Ableton MCP."""
 
-from typing import Dict, List, Union
-
 from mcp.server.fastmcp import Context
 
 from ..core import get_ableton_connection
@@ -21,7 +19,7 @@ def create_clip(ctx: Context, track_index: int, clip_index: int, length: float =
     """
     try:
         ableton = get_ableton_connection()
-        result = ableton.send_command(
+        ableton.send_command(
             "create_clip",
             {"track_index": track_index, "clip_index": clip_index, "length": length},
         )
@@ -47,7 +45,7 @@ def add_notes_to_clip(
     """
     try:
         ableton = get_ableton_connection()
-        result = ableton.send_command(
+        ableton.send_command(
             "add_notes_to_clip",
             {"track_index": track_index, "clip_index": clip_index, "notes": notes},
         )
@@ -68,7 +66,7 @@ def set_clip_name(ctx: Context, track_index: int, clip_index: int, name: str) ->
     """
     try:
         ableton = get_ableton_connection()
-        result = ableton.send_command(
+        ableton.send_command(
             "set_clip_name",
             {"track_index": track_index, "clip_index": clip_index, "name": name},
         )
@@ -88,7 +86,7 @@ def fire_clip(ctx: Context, track_index: int, clip_index: int) -> str:
     """
     try:
         ableton = get_ableton_connection()
-        result = ableton.send_command("fire_clip", {"track_index": track_index, "clip_index": clip_index})
+        ableton.send_command("fire_clip", {"track_index": track_index, "clip_index": clip_index})
         return f"Started playing clip at track {track_index}, slot {clip_index}"
     except Exception as e:
         logger.error(f"Error firing clip: {str(e)}")
@@ -105,7 +103,7 @@ def stop_clip(ctx: Context, track_index: int, clip_index: int) -> str:
     """
     try:
         ableton = get_ableton_connection()
-        result = ableton.send_command("stop_clip", {"track_index": track_index, "clip_index": clip_index})
+        ableton.send_command("stop_clip", {"track_index": track_index, "clip_index": clip_index})
         return f"Stopped clip at track {track_index}, slot {clip_index}"
     except Exception as e:
         logger.error(f"Error stopping clip: {str(e)}")

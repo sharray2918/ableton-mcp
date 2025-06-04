@@ -1,6 +1,5 @@
 """Base handler class for AbletonMCP Remote Script handlers."""
 
-from collections.abc import Callable
 from typing import Any
 
 from .error_handling import handle_exception, safe_execute

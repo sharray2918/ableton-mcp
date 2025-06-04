@@ -54,7 +54,7 @@ class BrowserHandlers(BaseHandler):
                     # Default to instruments if not specified
                     current_item = app.browser.instruments
                     # Don't skip the first part in this case
-                    path_parts = ["instruments"] + path_parts
+                    path_parts = ["instruments", *path_parts]
 
                 # Navigate through the path
                 for i in range(1, len(path_parts)):
@@ -109,13 +109,12 @@ class BrowserHandlers(BaseHandler):
             # Load the item
             app.browser.load_item(item)
 
-            result = {
+            return {
                 "loaded": True,
                 "item_name": item.name,
                 "track_name": track.name,
                 "uri": item_uri,
             }
-            return result
         except Exception as e:
             self.log_message(f"Error loading browser item: {str(e)}")
             self.log_message(traceback.format_exc())
@@ -233,9 +232,7 @@ class BrowserHandlers(BaseHandler):
                         self.log_message(f"Error processing {attr}: {str(e)}")
 
             self.log_message(
-                "Browser tree generated for {0} with {1} root categories".format(
-                    category_type, len(result["categories"])
-                )
+                "Browser tree generated for {} with {} root categories".format(category_type, len(result["categories"]))
             )
             return result
 
@@ -320,7 +317,7 @@ class BrowserHandlers(BaseHandler):
                 if not hasattr(current_item, "children"):
                     return {
                         "path": path,
-                        "error": "Item at '{0}' has no children".format("/".join(path_parts[:i])),
+                        "error": "Item at '{}' has no children".format("/".join(path_parts[:i])),
                         "items": [],
                     }
 

@@ -39,6 +39,7 @@ dev = [
 [tool.ruff]
 target-version = "py310"
 line-length = 120  # 120文字制限に変更
+unsafe-fixes = true  # 未使用変数の自動削除を含む危険な修正を有効化
 
 [tool.ruff.lint]
 select = [
@@ -70,6 +71,7 @@ select = [
     "ERA",  # eradicate (コメントアウトされたコードの検出)
     "PL",   # pylint (基本的なpylintルール)
     "RUF",  # Ruff独自のルール
+    "S",    # bandit (セキュリティルール)
 ]
 ignore = [
     # フォーマッター関連（自動修正されるため無視）
@@ -80,8 +82,8 @@ ignore = [
 
     # 開発効率重視のため緩和
     "E722",  # bare except (legacy code compatibility)
-    "F401",  # imported but unused (module exports)
-    "F841",  # local variable assigned but never used
+    # "F401",  # imported but unused - __init__.pyでのみ許可（下部の per-file-ignores で設定）
+    # "F841",  # local variable assigned but never used - 未使用変数を自動削除するため有効化
     "T201",  # print found (デバッグ用途で使用する場合があるため)
     "T203",  # pprint found
 
@@ -106,11 +108,12 @@ ignore = [
     "DTZ005",  # timezone naive datetime (一部のAPIで必要)
     "B011",    # assert false (テストコードで使用)
     "B904",    # raise without from in except clause (簡潔なエラー処理を許可)
+    "S110",    # try-except-pass (一部の場合で必要)
     "SIM108",  # if-else-block assignable to ternary (可読性重視)
-    "SIM105",  # use contextlib.suppress (try-except-passを許可)
+    # "SIM105",  # use contextlib.suppress - try-except-passの最適化のため有効化
     "C408",    # unnecessary dict call (明示的なdict()を許可)
-    "RET504",  # unnecessary assignment before return (可読性重視)
-    "RET505",  # unnecessary elif after return (可読性重視)
+    # "RET504",  # unnecessary assignment before return - 不要な変数代入除去のため有効化
+    # "RET505",  # unnecessary elif after return - 不要なelse-return除去のため有効化
     "RUF010",  # use explicit conversion flag (str()を許可)
     "RUF013",  # PEP 484 prohibits implicit Optional (既存コードとの互換性)
     "RUF022",  # __all__ is not sorted (手動管理を許可)
@@ -118,10 +121,10 @@ ignore = [
     "N813",    # camelcase imported as lowercase (レガシーライブラリ対応)
     "A001",    # variable shadows builtin (意図的な場合を許可)
     "A004",    # import shadows builtin (意図的な場合を許可)
-    "UP030",   # format specifiers (既存コードとの互換性)
-    "UP035",   # typing.Dict/List deprecated (既存コードとの互換性)
+    # "UP030",   # format specifiers - フォーマット文字列最新化のため有効化
+    # "UP035",   # typing.Dict/List deprecated - 非推奨typing import更新のため有効化
     "PLR1714", # consider merging multiple comparisons (可読性重視)
-    "RUF005",  # consider unpacking instead of concatenation (既存コードを尊重)
+    # "RUF005",  # consider unpacking instead of concatenation - リテラル結合最適化のため有効化
 ]
 
 [tool.ruff.format]

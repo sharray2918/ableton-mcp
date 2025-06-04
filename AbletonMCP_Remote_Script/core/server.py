@@ -6,6 +6,7 @@ client connections to the Ableton Live Remote Script.
 """
 
 from collections.abc import Callable
+import contextlib
 import socket
 import threading
 import time
@@ -91,10 +92,8 @@ class SocketServer:
 
         # Stop the server
         if self.server:
-            try:
+            with contextlib.suppress(OSError):
                 self.server.close()
-            except OSError:
-                pass
 
         # Wait for the server thread to exit
         if self.server_thread and self.server_thread.is_alive():

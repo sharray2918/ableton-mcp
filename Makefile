@@ -12,8 +12,8 @@ install-pre-commit: ## pre-commitフックをインストール
 lint: ## Ruffでコードをlint
 	uv run ruff check .
 
-lint-fix: ## Ruffでコードをlintし、修正可能な問題を自動修正
-	uv run ruff check --fix .
+lint-fix: ## Ruffでコードをlintし、修正可能な問題を自動修正（未使用変数の削除含む）
+	uv run ruff check --fix --unsafe-fixes .
 
 format: ## Ruffでコードをフォーマット
 	uv run ruff format .

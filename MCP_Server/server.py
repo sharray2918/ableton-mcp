@@ -1,8 +1,7 @@
 # ableton_mcp_server.py
+from collections.abc import AsyncIterator
 from contextlib import asynccontextmanager
-import json
-import logging
-from typing import Any, AsyncIterator, Dict, List, Union
+from typing import Any
 
 from mcp.server.fastmcp import Context, FastMCP
 
@@ -39,7 +38,7 @@ async def server_lifespan(server: FastMCP) -> AsyncIterator[dict[str, Any]]:
         logger.info("AbletonMCP server starting up")
 
         try:
-            ableton = get_ableton_connection()
+            get_ableton_connection()
             logger.info("Successfully connected to Ableton on startup")
         except Exception as e:
             logger.warning(f"Could not connect to Ableton on startup: {str(e)}")

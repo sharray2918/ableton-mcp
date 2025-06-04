@@ -11,7 +11,7 @@ class SessionHandlers(BaseHandler):
     def get_session_info(self) -> dict[str, Any]:
         """Get information about the current session"""
         try:
-            result = {
+            return {
                 "tempo": self._song.tempo,
                 "signature_numerator": self._song.signature_numerator,
                 "signature_denominator": self._song.signature_denominator,
@@ -23,7 +23,6 @@ class SessionHandlers(BaseHandler):
                     "panning": self._song.master_track.mixer_device.panning.value,
                 },
             }
-            return result
         except Exception as e:
             self.log_message("Error getting session info: " + str(e))
             raise
@@ -60,7 +59,7 @@ class SessionHandlers(BaseHandler):
                     }
                 )
 
-            result = {
+            return {
                 "index": track_index,
                 "name": track.name,
                 "is_audio_track": track.has_audio_input,
@@ -73,7 +72,6 @@ class SessionHandlers(BaseHandler):
                 "clip_slots": clip_slots,
                 "devices": devices,
             }
-            return result
         except Exception as e:
             self.log_message("Error getting track info: " + str(e))
             raise
@@ -88,8 +86,7 @@ class SessionHandlers(BaseHandler):
             new_track_index = len(self._song.tracks) - 1 if index == -1 else index
             new_track = self._song.tracks[new_track_index]
 
-            result = {"index": new_track_index, "name": new_track.name}
-            return result
+            return {"index": new_track_index, "name": new_track.name}
         except Exception as e:
             self.log_message("Error creating MIDI track: " + str(e))
             raise
@@ -100,8 +97,7 @@ class SessionHandlers(BaseHandler):
             track = self.get_track(track_index)
             track.name = name
 
-            result = {"name": track.name}
-            return result
+            return {"name": track.name}
         except Exception as e:
             self.log_message("Error setting track name: " + str(e))
             raise
@@ -114,8 +110,7 @@ class SessionHandlers(BaseHandler):
 
             self._song.tempo = tempo
 
-            result = {"tempo": self._song.tempo}
-            return result
+            return {"tempo": self._song.tempo}
         except Exception as e:
             self.log_message("Error setting tempo: " + str(e))
             raise
@@ -126,15 +121,14 @@ class SessionHandlers(BaseHandler):
             # Simple heuristic - in a real implementation you'd look at the device class
             if device.can_have_drum_pads:
                 return "drum_machine"
-            elif device.can_have_chains:
+            if device.can_have_chains:
                 return "rack"
-            elif "instrument" in device.class_display_name.lower():
+            if "instrument" in device.class_display_name.lower():
                 return "instrument"
-            elif "audio_effect" in device.class_name.lower():
+            if "audio_effect" in device.class_name.lower():
                 return "audio_effect"
-            elif "midi_effect" in device.class_name.lower():
+            if "midi_effect" in device.class_name.lower():
                 return "midi_effect"
-            else:
-                return "unknown"
+            return "unknown"
         except:
             return "unknown"

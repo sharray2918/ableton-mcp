@@ -1,9 +1,10 @@
 """Ableton Live connection management."""
 
+import contextlib
 from dataclasses import dataclass
 import json
 import socket
-from typing import Any, Dict
+from typing import Any
 
 from ..utils.logging import get_logger
 
@@ -189,10 +190,8 @@ def get_ableton_connection() -> AbletonConnection:
             return _ableton_connection
         except Exception as e:
             logger.warning(f"Existing connection is no longer valid: {str(e)}")
-            try:
+            with contextlib.suppress(Exception):
                 _ableton_connection.disconnect()
-            except:
-                pass
             _ableton_connection = None
 
     # Connection doesn't exist or is invalid, create a new one

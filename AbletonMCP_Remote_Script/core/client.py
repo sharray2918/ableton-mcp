@@ -6,6 +6,7 @@ for the Ableton Live Remote Script.
 """
 
 from collections.abc import Callable
+import contextlib
 import json
 import socket
 import traceback
@@ -106,10 +107,8 @@ class ClientHandler:
         except OSError as e:
             self.logger.log_message(f"Error in client handler: {str(e)}")
         finally:
-            try:
+            with contextlib.suppress(OSError):
                 client.close()
-            except OSError:
-                pass
             self.logger.log_message("Client handler stopped")
 
     def _send_response(self, client: socket.socket, response: dict[str, Any]) -> None:

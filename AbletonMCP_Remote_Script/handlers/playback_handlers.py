@@ -13,8 +13,7 @@ class PlaybackHandlers(BaseHandler):
         try:
             self._song.start_playing()
 
-            result = {"playing": self._song.is_playing}
-            return result
+            return {"playing": self._song.is_playing}
         except Exception as e:
             self.log_message("Error starting playback: " + str(e))
             raise
@@ -24,8 +23,7 @@ class PlaybackHandlers(BaseHandler):
         try:
             self._song.stop_playing()
 
-            result = {"playing": self._song.is_playing}
-            return result
+            return {"playing": self._song.is_playing}
         except Exception as e:
             self.log_message("Error stopping playback: " + str(e))
             raise

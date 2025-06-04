@@ -1,7 +1,6 @@
 """Configuration models for Ableton MCP Server."""
 
 from dataclasses import dataclass
-from typing import Optional
 
 
 @dataclass

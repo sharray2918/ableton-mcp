@@ -1,7 +1,8 @@
 """Error handling utilities for AbletonMCP Remote Script."""
 
+from collections.abc import Callable
 import traceback
-from typing import Any, Callable
+from typing import Any
 
 
 def handle_exception(logger: Any, operation_name: str, exception: Exception) -> dict[str, Any]:

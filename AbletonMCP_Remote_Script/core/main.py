@@ -93,13 +93,13 @@ class AbletonMCP(ControlSurface):
             if command_type == "get_session_info":
                 result = self.session_handlers.get_session_info()
                 return format_success_response(result)
-            elif command_type == "get_track_info":
+            if command_type == "get_track_info":
                 track_index = params.get("track_index", 0)
                 result = self.session_handlers.get_track_info(track_index)
                 return format_success_response(result)
             # Commands that modify Live's state should be scheduled on
             # main thread
-            elif command_type in [
+            if command_type in [
                 "create_midi_track",
                 "set_track_name",
                 "create_clip",
@@ -113,22 +113,21 @@ class AbletonMCP(ControlSurface):
                 "load_browser_item",
             ]:
                 return self._handle_main_thread_command(command_type, params)
-            elif command_type == "get_browser_item":
+            if command_type == "get_browser_item":
                 uri = params.get("uri", None)
                 path = params.get("path", None)
                 result = self.browser_handlers.get_browser_item(uri, path)
                 return format_success_response(result)
-            elif command_type == "get_browser_tree":
+            if command_type == "get_browser_tree":
                 category_type = params.get("category_type", "all")
                 result = self.browser_handlers.get_browser_tree(category_type)
                 return format_success_response(result)
-            elif command_type == "get_browser_items_at_path":
+            if command_type == "get_browser_items_at_path":
                 path = params.get("path", "")
                 result = self.browser_handlers.get_browser_items_at_path(path)
                 return format_success_response(result)
-            else:
-                error_msg = f"Unknown command: {command_type}"
-                return format_error_response(error_msg)
+            error_msg = f"Unknown command: {command_type}"
+            return format_error_response(error_msg)
         except (OSError, AttributeError, ValueError, TypeError) as e:
             self.log_message(f"Error processing command: {str(e)}")
             self.log_message(traceback.format_exc())
@@ -211,8 +210,7 @@ class AbletonMCP(ControlSurface):
 
         # Wait for the response with a timeout
         try:
-            task_response = response_queue.get(timeout=10.0)
-            return task_response
+            return response_queue.get(timeout=10.0)
         except queue.Empty:
             error_msg = "Timeout waiting for operation to complete"
             return format_error_response(error_msg)

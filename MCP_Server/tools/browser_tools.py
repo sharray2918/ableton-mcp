@@ -30,13 +30,9 @@ def load_instrument_or_effect(ctx: Context, track_index: int, uri: str) -> str:
                 return (
                     f"Loaded instrument with URI '{uri}' on track {track_index}. New devices: {', '.join(new_devices)}"
                 )
-            else:
-                devices = result.get("devices_after", [])
-                return (
-                    f"Loaded instrument with URI '{uri}' on track {track_index}. Devices on track: {', '.join(devices)}"
-                )
-        else:
-            return f"Failed to load instrument with URI '{uri}'"
+            devices = result.get("devices_after", [])
+            return f"Loaded instrument with URI '{uri}' on track {track_index}. Devices on track: {', '.join(devices)}"
+        return f"Failed to load instrument with URI '{uri}'"
     except Exception as e:
         logger.error(f"Error loading instrument by URI: {str(e)}")
         return f"Error loading instrument by URI: {str(e)}"
@@ -97,12 +93,11 @@ def get_browser_tree(ctx: Context, category_type: str = "all") -> str:
         if "Browser is not available" in error_msg:
             logger.error(f"Browser is not available in Ableton: {error_msg}")
             return "Error: The Ableton browser is not available. Make sure Ableton Live is fully loaded and try again."
-        elif "Could not access Live application" in error_msg:
+        if "Could not access Live application" in error_msg:
             logger.error(f"Could not access Live application: {error_msg}")
             return "Error: Could not access the Ableton Live application. Make sure Ableton Live is running and the Remote Script is loaded."
-        else:
-            logger.error(f"Error getting browser tree: {error_msg}")
-            return f"Error getting browser tree: {error_msg}"
+        logger.error(f"Error getting browser tree: {error_msg}")
+        return f"Error getting browser tree: {error_msg}"
 
 
 def get_browser_items_at_path(ctx: Context, path: str) -> str:
@@ -129,18 +124,17 @@ def get_browser_items_at_path(ctx: Context, path: str) -> str:
         if "Browser is not available" in error_msg:
             logger.error(f"Browser is not available in Ableton: {error_msg}")
             return "Error: The Ableton browser is not available. Make sure Ableton Live is fully loaded and try again."
-        elif "Could not access Live application" in error_msg:
+        if "Could not access Live application" in error_msg:
             logger.error(f"Could not access Live application: {error_msg}")
             return "Error: Could not access the Ableton Live application. Make sure Ableton Live is running and the Remote Script is loaded."
-        elif "Unknown or unavailable category" in error_msg:
+        if "Unknown or unavailable category" in error_msg:
             logger.error(f"Invalid browser category: {error_msg}")
             return f"Error: {error_msg}. Please check the available categories using get_browser_tree."
-        elif "Path part" in error_msg and "not found" in error_msg:
+        if "Path part" in error_msg and "not found" in error_msg:
             logger.error(f"Path not found: {error_msg}")
             return f"Error: {error_msg}. Please check the path and try again."
-        else:
-            logger.error(f"Error getting browser items at path: {error_msg}")
-            return f"Error getting browser items at path: {error_msg}"
+        logger.error(f"Error getting browser items at path: {error_msg}")
+        return f"Error getting browser items at path: {error_msg}"
 
 
 def load_drum_kit(ctx: Context, track_index: int, rack_uri: str, kit_path: str) -> str:
@@ -176,7 +170,7 @@ def load_drum_kit(ctx: Context, track_index: int, rack_uri: str, kit_path: str) 
 
         # Step 4: Load the first loadable kit
         kit_uri = loadable_kits[0].get("uri")
-        load_result = ableton.send_command("load_browser_item", {"track_index": track_index, "item_uri": kit_uri})
+        ableton.send_command("load_browser_item", {"track_index": track_index, "item_uri": kit_uri})
 
         return f"Loaded drum rack and kit '{loadable_kits[0].get('name')}' on track {track_index}"
     except Exception as e:

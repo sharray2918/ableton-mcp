@@ -1,7 +1,6 @@
 """Logging utilities for Ableton MCP Server."""
 
 import logging
-from typing import Optional
 
 
 def setup_logging(
