@@ -15,7 +15,7 @@ class ServerConfig:
     retry_delay: float = 1.0
     buffer_size: int = 8192
 
-    def __post_init__(self):
+    def __post_init__(self) -> None:
         """Validate configuration values."""
         if not (1 <= self.port <= 65535):
             raise ValueError(f"Port must be between 1 and 65535, got {self.port}")
@@ -53,7 +53,7 @@ class MCPConfig:
     server: ServerConfig = None
     logging: LogConfig = None
 
-    def __post_init__(self):
+    def __post_init__(self) -> None:
         if self.server is None:
             self.server = ServerConfig()
         if self.logging is None:

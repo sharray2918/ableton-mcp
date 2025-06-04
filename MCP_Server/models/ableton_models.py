@@ -149,7 +149,7 @@ class TrackInfo:
     clip_slots: list[ClipSlotInfo] = None
     devices: list[DeviceInfo] = None
 
-    def __post_init__(self):
+    def __post_init__(self) -> None:
         if self.clip_slots is None:
             self.clip_slots = []
         if self.devices is None:
@@ -204,7 +204,7 @@ class BrowserItem:
     is_loadable: bool = False
     children: list["BrowserItem"] = None
 
-    def __post_init__(self):
+    def __post_init__(self) -> None:
         if self.children is None:
             self.children = []
 
@@ -227,7 +227,7 @@ class CommandRequest:
     command_type: CommandType
     params: dict[str, Any] = None
 
-    def __post_init__(self):
+    def __post_init__(self) -> None:
         if self.params is None:
             self.params = {}
 

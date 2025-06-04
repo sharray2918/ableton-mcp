@@ -33,7 +33,7 @@ class AbletonConnection:
             self.sock = None
             return False
 
-    def disconnect(self):
+    def disconnect(self) -> None:
         """Disconnect from the Ableton Remote Script"""
         if self.sock:
             try:
@@ -43,7 +43,7 @@ class AbletonConnection:
             finally:
                 self.sock = None
 
-    def receive_full_response(self, sock, buffer_size=8192):
+    def receive_full_response(self, sock: socket.socket, buffer_size: int = 8192) -> bytes:
         """Receive the complete response, potentially in multiple chunks"""
         chunks = []
         sock.settimeout(15.0)  # Increased timeout for operations that might take longer
@@ -161,7 +161,8 @@ class AbletonConnection:
         except json.JSONDecodeError as e:
             logger.error(f"Invalid JSON response from Ableton: {str(e)}")
             if "response_data" in locals() and response_data:
-                logger.error(f"Raw response (first 200 bytes): {response_data[:200]}")
+                raw_data = response_data[:200]
+                logger.error(f"Raw response (first 200 bytes): {raw_data!r}")
             self.sock = None
             raise Exception(f"Invalid response from Ableton: {str(e)}")
         except Exception as e:
@@ -174,7 +175,7 @@ class AbletonConnection:
 _ableton_connection = None
 
 
-def get_ableton_connection():
+def get_ableton_connection() -> AbletonConnection:
     """Get or create a persistent Ableton connection"""
     global _ableton_connection
 
@@ -238,7 +239,7 @@ def get_ableton_connection():
     return _ableton_connection
 
 
-def disconnect_global_connection():
+def disconnect_global_connection() -> None:
     """Disconnect the global connection"""
     global _ableton_connection
     if _ableton_connection:
