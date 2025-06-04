@@ -37,7 +37,20 @@
     ],
     "cSpell.words": [
         "Ableton",
+        "contextlib",
+        "elif",
         "fastmcp",
-        "levelname"
+        "isort",
+        "levelname",
+        "mypy",
+        "pathlib",
+        "pprint",
+        "pycache",
+        "pycodestyle",
+        "pyflakes",
+        "pylint",
+        "pytest",
+        "pyupgrade",
+        "venv"
     ]
 }

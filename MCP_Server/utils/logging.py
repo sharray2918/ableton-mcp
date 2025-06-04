@@ -6,7 +6,7 @@ from typing import Optional
 
 def setup_logging(
     level: str = "INFO",
-    format_string: Optional[str] = None,
+    format_string: str | None = None,
     logger_name: str = "AbletonMCPServer",
 ) -> logging.Logger:
     """
