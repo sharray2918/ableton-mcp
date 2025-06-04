@@ -1,31 +1,15 @@
 """Clip management handlers for AbletonMCP Remote Script."""
 
-import traceback
+from ..utils import BaseHandler, validate_note_data
 
 
-class ClipHandlers:
+class ClipHandlers(BaseHandler):
     """Handlers for clip-related commands."""
-
-    def __init__(self, control_surface):
-        self.control_surface = control_surface
-        self._song = control_surface._song
-
-    def log_message(self, message):
-        """Log a message using the control surface's logging."""
-        self.control_surface.log_message(message)
 
     def create_clip(self, track_index, clip_index, length):
         """Create a new MIDI clip in the specified track and clip slot"""
         try:
-            if track_index < 0 or track_index >= len(self._song.tracks):
-                raise IndexError("Track index out of range")
-
-            track = self._song.tracks[track_index]
-
-            if clip_index < 0 or clip_index >= len(track.clip_slots):
-                raise IndexError("Clip index out of range")
-
-            clip_slot = track.clip_slots[clip_index]
+            clip_slot = self.get_clip_slot(track_index, clip_index)
 
             # Check if the clip slot already has a clip
             if clip_slot.has_clip:
@@ -43,24 +27,19 @@ class ClipHandlers:
     def add_notes_to_clip(self, track_index, clip_index, notes):
         """Add MIDI notes to a clip"""
         try:
-            if track_index < 0 or track_index >= len(self._song.tracks):
-                raise IndexError("Track index out of range")
-
-            track = self._song.tracks[track_index]
-
-            if clip_index < 0 or clip_index >= len(track.clip_slots):
-                raise IndexError("Clip index out of range")
-
-            clip_slot = track.clip_slots[clip_index]
+            clip_slot = self.get_clip_slot(track_index, clip_index)
 
             if not clip_slot.has_clip:
                 raise Exception("No clip in slot")
 
             clip = clip_slot.clip
 
-            # Convert note data to Live's format
+            # Validate and convert note data to Live's format
             live_notes = []
             for note in notes:
+                # Validate note data
+                validate_note_data(note)
+
                 pitch = note.get("pitch", 60)
                 start_time = note.get("start_time", 0.0)
                 duration = note.get("duration", 0.25)
@@ -81,15 +60,7 @@ class ClipHandlers:
     def set_clip_name(self, track_index, clip_index, name):
         """Set the name of a clip"""
         try:
-            if track_index < 0 or track_index >= len(self._song.tracks):
-                raise IndexError("Track index out of range")
-
-            track = self._song.tracks[track_index]
-
-            if clip_index < 0 or clip_index >= len(track.clip_slots):
-                raise IndexError("Clip index out of range")
-
-            clip_slot = track.clip_slots[clip_index]
+            clip_slot = self.get_clip_slot(track_index, clip_index)
 
             if not clip_slot.has_clip:
                 raise Exception("No clip in slot")
@@ -106,15 +77,7 @@ class ClipHandlers:
     def fire_clip(self, track_index, clip_index):
         """Fire a clip"""
         try:
-            if track_index < 0 or track_index >= len(self._song.tracks):
-                raise IndexError("Track index out of range")
-
-            track = self._song.tracks[track_index]
-
-            if clip_index < 0 or clip_index >= len(track.clip_slots):
-                raise IndexError("Clip index out of range")
-
-            clip_slot = track.clip_slots[clip_index]
+            clip_slot = self.get_clip_slot(track_index, clip_index)
 
             if not clip_slot.has_clip:
                 raise Exception("No clip in slot")
@@ -131,15 +94,7 @@ class ClipHandlers:
     def stop_clip(self, track_index, clip_index):
         """Stop a clip"""
         try:
-            if track_index < 0 or track_index >= len(self._song.tracks):
-                raise IndexError("Track index out of range")
-
-            track = self._song.tracks[track_index]
-
-            if clip_index < 0 or clip_index >= len(track.clip_slots):
-                raise IndexError("Clip index out of range")
-
-            clip_slot = track.clip_slots[clip_index]
+            clip_slot = self.get_clip_slot(track_index, clip_index)
 
             if not clip_slot.has_clip:
                 raise Exception("No clip in slot")

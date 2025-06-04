@@ -1,18 +1,10 @@
 """Session and track management handlers for AbletonMCP Remote Script."""
 
-import traceback
+from ..utils import BaseHandler, validate_tempo
 
 
-class SessionHandlers:
+class SessionHandlers(BaseHandler):
     """Handlers for session and track-related commands."""
-
-    def __init__(self, control_surface):
-        self.control_surface = control_surface
-        self._song = control_surface._song
-
-    def log_message(self, message):
-        """Log a message using the control surface's logging."""
-        self.control_surface.log_message(message)
 
     def get_session_info(self):
         """Get information about the current session"""
@@ -37,10 +29,7 @@ class SessionHandlers:
     def get_track_info(self, track_index):
         """Get information about a track"""
         try:
-            if track_index < 0 or track_index >= len(self._song.tracks):
-                raise IndexError("Track index out of range")
-
-            track = self._song.tracks[track_index]
+            track = self.get_track(track_index)
 
             # Get clip slots
             clip_slots = []
@@ -55,9 +44,7 @@ class SessionHandlers:
                         "is_recording": clip.is_recording,
                     }
 
-                clip_slots.append(
-                    {"index": slot_index, "has_clip": slot.has_clip, "clip": clip_info}
-                )
+                clip_slots.append({"index": slot_index, "has_clip": slot.has_clip, "clip": clip_info})
 
             # Get devices
             devices = []
@@ -108,11 +95,7 @@ class SessionHandlers:
     def set_track_name(self, track_index, name):
         """Set the name of a track"""
         try:
-            if track_index < 0 or track_index >= len(self._song.tracks):
-                raise IndexError("Track index out of range")
-
-            # Set the name
-            track = self._song.tracks[track_index]
+            track = self.get_track(track_index)
             track.name = name
 
             result = {"name": track.name}
@@ -124,6 +107,9 @@ class SessionHandlers:
     def set_tempo(self, tempo):
         """Set the tempo of the session"""
         try:
+            # Validate tempo value
+            validate_tempo(tempo)
+
             self._song.tempo = tempo
 
             result = {"tempo": self._song.tempo}

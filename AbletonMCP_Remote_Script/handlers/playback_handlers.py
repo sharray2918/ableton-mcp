@@ -1,18 +1,10 @@
 """Playback control handlers for AbletonMCP Remote Script."""
 
-import traceback
+from ..utils import BaseHandler
 
 
-class PlaybackHandlers:
+class PlaybackHandlers(BaseHandler):
     """Handlers for playback-related commands."""
-
-    def __init__(self, control_surface):
-        self.control_surface = control_surface
-        self._song = control_surface._song
-
-    def log_message(self, message):
-        """Log a message using the control surface's logging."""
-        self.control_surface.log_message(message)
 
     def start_playback(self):
         """Start playing the session"""

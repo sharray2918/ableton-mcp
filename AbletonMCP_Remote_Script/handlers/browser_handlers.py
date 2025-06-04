@@ -1,18 +1,13 @@
 """Browser handlers for AbletonMCP Remote Script."""
 
 import traceback
+from typing import Any
+
+from ..utils import BaseHandler
 
 
-class BrowserHandlers:
+class BrowserHandlers(BaseHandler):
     """Handlers for browser-related commands."""
-
-    def __init__(self, control_surface):
-        self.control_surface = control_surface
-        self._song = control_surface._song
-
-    def log_message(self, message):
-        """Log a message using the control surface's logging."""
-        self.control_surface.log_message(message)
 
     def get_browser_item(self, uri, path):
         """Get a browser item by URI or path"""
@@ -75,7 +70,7 @@ class BrowserHandlers:
                             break
 
                     if not found:
-                        result["error"] = "Path part '{0}' not found".format(part)
+                        result["error"] = f"Path part '{part}' not found"
                         return result
 
                 # Found the item
@@ -97,10 +92,7 @@ class BrowserHandlers:
     def load_browser_item(self, track_index, item_uri):
         """Load a browser item onto a track by its URI"""
         try:
-            if track_index < 0 or track_index >= len(self._song.tracks):
-                raise IndexError("Track index out of range")
-
-            track = self._song.tracks[track_index]
+            track = self.get_track(track_index)
 
             # Access the application's browser instance instead of creating a new one
             app = self.control_surface.application()
@@ -109,9 +101,7 @@ class BrowserHandlers:
             item = self._find_browser_item_by_uri(app.browser, item_uri)
 
             if not item:
-                raise ValueError(
-                    "Browser item with URI '{0}' not found".format(item_uri)
-                )
+                raise ValueError(f"Browser item with URI '{item_uri}' not found")
 
             # Select the track
             self._song.view.selected_track = track
@@ -127,7 +117,7 @@ class BrowserHandlers:
             }
             return result
         except Exception as e:
-            self.log_message("Error loading browser item: {0}".format(str(e)))
+            self.log_message(f"Error loading browser item: {str(e)}")
             self.log_message(traceback.format_exc())
             raise
 
@@ -152,10 +142,8 @@ class BrowserHandlers:
                 raise RuntimeError("Browser is not available in the Live application")
 
             # Log available browser attributes to help diagnose issues
-            browser_attrs = [
-                attr for attr in dir(app.browser) if not attr.startswith("_")
-            ]
-            self.log_message("Available browser attributes: {0}".format(browser_attrs))
+            browser_attrs = [attr for attr in dir(app.browser) if not attr.startswith("_")]
+            self.log_message(f"Available browser attributes: {browser_attrs}")
 
             result = {
                 "type": category_type,
@@ -168,7 +156,7 @@ class BrowserHandlers:
                 if not item:
                     return None
 
-                result = {
+                result: dict[str, Any] = {
                     "name": item.name if hasattr(item, "name") else "Unknown",
                     "is_folder": hasattr(item, "children") and bool(item.children),
                     "is_device": hasattr(item, "is_device") and item.is_device,
@@ -180,66 +168,50 @@ class BrowserHandlers:
                 return result
 
             # Process based on category type and available attributes
-            if (category_type == "all" or category_type == "instruments") and hasattr(
-                app.browser, "instruments"
-            ):
+            if (category_type == "all" or category_type == "instruments") and hasattr(app.browser, "instruments"):
                 try:
                     instruments = process_item(app.browser.instruments)
                     if instruments:
                         instruments["name"] = "Instruments"  # Ensure consistent naming
                         result["categories"].append(instruments)
                 except Exception as e:
-                    self.log_message("Error processing instruments: {0}".format(str(e)))
+                    self.log_message(f"Error processing instruments: {str(e)}")
 
-            if (category_type == "all" or category_type == "sounds") and hasattr(
-                app.browser, "sounds"
-            ):
+            if (category_type == "all" or category_type == "sounds") and hasattr(app.browser, "sounds"):
                 try:
                     sounds = process_item(app.browser.sounds)
                     if sounds:
                         sounds["name"] = "Sounds"  # Ensure consistent naming
                         result["categories"].append(sounds)
                 except Exception as e:
-                    self.log_message("Error processing sounds: {0}".format(str(e)))
+                    self.log_message(f"Error processing sounds: {str(e)}")
 
-            if (category_type == "all" or category_type == "drums") and hasattr(
-                app.browser, "drums"
-            ):
+            if (category_type == "all" or category_type == "drums") and hasattr(app.browser, "drums"):
                 try:
                     drums = process_item(app.browser.drums)
                     if drums:
                         drums["name"] = "Drums"  # Ensure consistent naming
                         result["categories"].append(drums)
                 except Exception as e:
-                    self.log_message("Error processing drums: {0}".format(str(e)))
+                    self.log_message(f"Error processing drums: {str(e)}")
 
-            if (category_type == "all" or category_type == "audio_effects") and hasattr(
-                app.browser, "audio_effects"
-            ):
+            if (category_type == "all" or category_type == "audio_effects") and hasattr(app.browser, "audio_effects"):
                 try:
                     audio_effects = process_item(app.browser.audio_effects)
                     if audio_effects:
-                        audio_effects["name"] = (
-                            "Audio Effects"  # Ensure consistent naming
-                        )
+                        audio_effects["name"] = "Audio Effects"  # Ensure consistent naming
                         result["categories"].append(audio_effects)
                 except Exception as e:
-                    self.log_message(
-                        "Error processing audio_effects: {0}".format(str(e))
-                    )
+                    self.log_message(f"Error processing audio_effects: {str(e)}")
 
-            if (category_type == "all" or category_type == "midi_effects") and hasattr(
-                app.browser, "midi_effects"
-            ):
+            if (category_type == "all" or category_type == "midi_effects") and hasattr(app.browser, "midi_effects"):
                 try:
                     midi_effects = process_item(app.browser.midi_effects)
                     if midi_effects:
                         midi_effects["name"] = "MIDI Effects"
                         result["categories"].append(midi_effects)
                 except Exception as e:
-                    self.log_message(
-                        "Error processing midi_effects: {0}".format(str(e))
-                    )
+                    self.log_message(f"Error processing midi_effects: {str(e)}")
 
             # Try to process other potentially available categories
             for attr in browser_attrs:
@@ -258,9 +230,7 @@ class BrowserHandlers:
                                 category["name"] = attr.capitalize()
                                 result["categories"].append(category)
                     except Exception as e:
-                        self.log_message(
-                            "Error processing {0}: {1}".format(attr, str(e))
-                        )
+                        self.log_message(f"Error processing {attr}: {str(e)}")
 
             self.log_message(
                 "Browser tree generated for {0} with {1} root categories".format(
@@ -270,7 +240,7 @@ class BrowserHandlers:
             return result
 
         except Exception as e:
-            self.log_message("Error getting browser tree: {0}".format(str(e)))
+            self.log_message(f"Error getting browser tree: {str(e)}")
             self.log_message(traceback.format_exc())
             raise
 
@@ -297,10 +267,8 @@ class BrowserHandlers:
                 raise RuntimeError("Browser is not available in the Live application")
 
             # Log available browser attributes to help diagnose issues
-            browser_attrs = [
-                attr for attr in dir(app.browser) if not attr.startswith("_")
-            ]
-            self.log_message("Available browser attributes: {0}".format(browser_attrs))
+            browser_attrs = [attr for attr in dir(app.browser) if not attr.startswith("_")]
+            self.log_message(f"Available browser attributes: {browser_attrs}")
 
             # Parse the path
             path_parts = path.split("/")
@@ -318,13 +286,9 @@ class BrowserHandlers:
                 current_item = app.browser.sounds
             elif root_category == "drums" and hasattr(app.browser, "drums"):
                 current_item = app.browser.drums
-            elif root_category == "audio_effects" and hasattr(
-                app.browser, "audio_effects"
-            ):
+            elif root_category == "audio_effects" and hasattr(app.browser, "audio_effects"):
                 current_item = app.browser.audio_effects
-            elif root_category == "midi_effects" and hasattr(
-                app.browser, "midi_effects"
-            ):
+            elif root_category == "midi_effects" and hasattr(app.browser, "midi_effects"):
                 current_item = app.browser.midi_effects
             else:
                 # Try to find the category in other browser attributes
@@ -336,19 +300,13 @@ class BrowserHandlers:
                             found = True
                             break
                         except Exception as e:
-                            self.log_message(
-                                "Error accessing browser attribute {0}: {1}".format(
-                                    attr, str(e)
-                                )
-                            )
+                            self.log_message(f"Error accessing browser attribute {attr}: {str(e)}")
 
                 if not found:
                     # If we still haven't found the category, return available categories
                     return {
                         "path": path,
-                        "error": "Unknown or unavailable category: {0}".format(
-                            root_category
-                        ),
+                        "error": f"Unknown or unavailable category: {root_category}",
                         "available_categories": browser_attrs,
                         "items": [],
                     }
@@ -362,9 +320,7 @@ class BrowserHandlers:
                 if not hasattr(current_item, "children"):
                     return {
                         "path": path,
-                        "error": "Item at '{0}' has no children".format(
-                            "/".join(path_parts[:i])
-                        ),
+                        "error": "Item at '{0}' has no children".format("/".join(path_parts[:i])),
                         "items": [],
                     }
 
@@ -378,7 +334,7 @@ class BrowserHandlers:
                 if not found:
                     return {
                         "path": path,
-                        "error": "Path part '{0}' not found".format(part),
+                        "error": f"Path part '{part}' not found",
                         "items": [],
                     }
 
@@ -388,43 +344,32 @@ class BrowserHandlers:
                 for child in current_item.children:
                     item_info = {
                         "name": child.name if hasattr(child, "name") else "Unknown",
-                        "is_folder": hasattr(child, "children")
-                        and bool(child.children),
+                        "is_folder": hasattr(child, "children") and bool(child.children),
                         "is_device": hasattr(child, "is_device") and child.is_device,
-                        "is_loadable": hasattr(child, "is_loadable")
-                        and child.is_loadable,
+                        "is_loadable": hasattr(child, "is_loadable") and child.is_loadable,
                         "uri": child.uri if hasattr(child, "uri") else None,
                     }
                     items.append(item_info)
 
             result = {
                 "path": path,
-                "name": current_item.name
-                if hasattr(current_item, "name")
-                else "Unknown",
+                "name": current_item.name if hasattr(current_item, "name") else "Unknown",
                 "uri": current_item.uri if hasattr(current_item, "uri") else None,
-                "is_folder": hasattr(current_item, "children")
-                and bool(current_item.children),
-                "is_device": hasattr(current_item, "is_device")
-                and current_item.is_device,
-                "is_loadable": hasattr(current_item, "is_loadable")
-                and current_item.is_loadable,
+                "is_folder": hasattr(current_item, "children") and bool(current_item.children),
+                "is_device": hasattr(current_item, "is_device") and current_item.is_device,
+                "is_loadable": hasattr(current_item, "is_loadable") and current_item.is_loadable,
                 "items": items,
             }
 
-            self.log_message(
-                "Retrieved {0} items at path: {1}".format(len(items), path)
-            )
+            self.log_message(f"Retrieved {len(items)} items at path: {path}")
             return result
 
         except Exception as e:
-            self.log_message("Error getting browser items at path: {0}".format(str(e)))
+            self.log_message(f"Error getting browser items at path: {str(e)}")
             self.log_message(traceback.format_exc())
             raise
 
-    def _find_browser_item_by_uri(
-        self, browser_or_item, uri, max_depth=10, current_depth=0
-    ):
+    def _find_browser_item_by_uri(self, browser_or_item, uri, max_depth=10, current_depth=0):
         """Find a browser item by its URI"""
         try:
             # Check if this is the item we're looking for
@@ -447,9 +392,7 @@ class BrowserHandlers:
                 ]
 
                 for category in categories:
-                    item = self._find_browser_item_by_uri(
-                        category, uri, max_depth, current_depth + 1
-                    )
+                    item = self._find_browser_item_by_uri(category, uri, max_depth, current_depth + 1)
                     if item:
                         return item
 
@@ -458,13 +401,11 @@ class BrowserHandlers:
             # Check if this item has children
             if hasattr(browser_or_item, "children") and browser_or_item.children:
                 for child in browser_or_item.children:
-                    item = self._find_browser_item_by_uri(
-                        child, uri, max_depth, current_depth + 1
-                    )
+                    item = self._find_browser_item_by_uri(child, uri, max_depth, current_depth + 1)
                     if item:
                         return item
 
             return None
         except Exception as e:
-            self.log_message("Error finding browser item by URI: {0}".format(str(e)))
+            self.log_message(f"Error finding browser item by URI: {str(e)}")
             return None

@@ -1,5 +1,3 @@
-from __future__ import absolute_import, print_function, unicode_literals
-
 import json
 import socket
 import threading
@@ -19,6 +17,7 @@ from ..handlers.browser_handlers import BrowserHandlers
 from ..handlers.clip_handlers import ClipHandlers
 from ..handlers.playback_handlers import PlaybackHandlers
 from ..handlers.session_handlers import SessionHandlers
+from ..utils import format_error_response, format_success_response
 
 # Constants for socket communication
 DEFAULT_PORT = 9877
@@ -54,9 +53,7 @@ class AbletonMCP(ControlSurface):
         self.log_message("AbletonMCP initialized")
 
         # Show a message in Ableton
-        self.show_message(
-            "AbletonMCP: Listening for commands on port " + str(DEFAULT_PORT)
-        )
+        self.show_message("AbletonMCP: Listening for commands on port " + str(DEFAULT_PORT))
 
     def disconnect(self):
         """Called when Ableton closes or the control surface is removed"""
@@ -116,9 +113,7 @@ class AbletonMCP(ControlSurface):
                     self.show_message("AbletonMCP: Client connected")
 
                     # Handle client in a separate thread
-                    client_thread = threading.Thread(
-                        target=self._handle_client, args=(client,)
-                    )
+                    client_thread = threading.Thread(target=self._handle_client, args=(client,))
                     client_thread.daemon = True
                     client_thread.start()
 
@@ -126,11 +121,9 @@ class AbletonMCP(ControlSurface):
                     self.client_threads.append(client_thread)
 
                     # Clean up finished client threads
-                    self.client_threads = [
-                        t for t in self.client_threads if t.is_alive()
-                    ]
+                    self.client_threads = [t for t in self.client_threads if t.is_alive()]
 
-                except socket.timeout:
+                except TimeoutError:
                     # No connection yet, just continue
                     continue
                 except Exception as e:
@@ -172,9 +165,7 @@ class AbletonMCP(ControlSurface):
                         command = json.loads(buffer)  # Removed decode('utf-8')
                         buffer = ""  # Clear buffer after successful parse
 
-                        self.log_message(
-                            "Received command: " + str(command.get("type", "unknown"))
-                        )
+                        self.log_message("Received command: " + str(command.get("type", "unknown")))
 
                         # Process the command and get response
                         response = self._process_command(command)
@@ -195,7 +186,7 @@ class AbletonMCP(ControlSurface):
                     self.log_message(traceback.format_exc())
 
                     # Send error response if possible
-                    error_response = {"status": "error", "message": str(e)}
+                    error_response = format_error_response(str(e))
                     try:
                         # Python 3: encode string to bytes
                         client.sendall(json.dumps(error_response).encode("utf-8"))
@@ -223,16 +214,15 @@ class AbletonMCP(ControlSurface):
         command_type = command.get("type", "")
         params = command.get("params", {})
 
-        # Initialize response
-        response = {"status": "success", "result": {}}
-
         try:
             # Route the command to the appropriate handler
             if command_type == "get_session_info":
-                response["result"] = self.session_handlers.get_session_info()
+                result = self.session_handlers.get_session_info()
+                return format_success_response(result)
             elif command_type == "get_track_info":
                 track_index = params.get("track_index", 0)
-                response["result"] = self.session_handlers.get_track_info(track_index)
+                result = self.session_handlers.get_track_info(track_index)
+                return format_success_response(result)
             # Commands that modify Live's state should be scheduled on the main thread
             elif command_type in [
                 "create_midi_track",
@@ -260,45 +250,33 @@ class AbletonMCP(ControlSurface):
                         elif command_type == "set_track_name":
                             track_index = params.get("track_index", 0)
                             name = params.get("name", "")
-                            result = self.session_handlers.set_track_name(
-                                track_index, name
-                            )
+                            result = self.session_handlers.set_track_name(track_index, name)
                         elif command_type == "create_clip":
                             track_index = params.get("track_index", 0)
                             clip_index = params.get("clip_index", 0)
                             length = params.get("length", 4.0)
-                            result = self.clip_handlers.create_clip(
-                                track_index, clip_index, length
-                            )
+                            result = self.clip_handlers.create_clip(track_index, clip_index, length)
                         elif command_type == "add_notes_to_clip":
                             track_index = params.get("track_index", 0)
                             clip_index = params.get("clip_index", 0)
                             notes = params.get("notes", [])
-                            result = self.clip_handlers.add_notes_to_clip(
-                                track_index, clip_index, notes
-                            )
+                            result = self.clip_handlers.add_notes_to_clip(track_index, clip_index, notes)
                         elif command_type == "set_clip_name":
                             track_index = params.get("track_index", 0)
                             clip_index = params.get("clip_index", 0)
                             name = params.get("name", "")
-                            result = self.clip_handlers.set_clip_name(
-                                track_index, clip_index, name
-                            )
+                            result = self.clip_handlers.set_clip_name(track_index, clip_index, name)
                         elif command_type == "set_tempo":
                             tempo = params.get("tempo", 120.0)
                             result = self.session_handlers.set_tempo(tempo)
                         elif command_type == "fire_clip":
                             track_index = params.get("track_index", 0)
                             clip_index = params.get("clip_index", 0)
-                            result = self.clip_handlers.fire_clip(
-                                track_index, clip_index
-                            )
+                            result = self.clip_handlers.fire_clip(track_index, clip_index)
                         elif command_type == "stop_clip":
                             track_index = params.get("track_index", 0)
                             clip_index = params.get("clip_index", 0)
-                            result = self.clip_handlers.stop_clip(
-                                track_index, clip_index
-                            )
+                            result = self.clip_handlers.stop_clip(track_index, clip_index)
                         elif command_type == "start_playback":
                             result = self.playback_handlers.start_playback()
                         elif command_type == "stop_playback":
@@ -306,22 +284,18 @@ class AbletonMCP(ControlSurface):
                         elif command_type == "load_instrument_or_effect":
                             track_index = params.get("track_index", 0)
                             uri = params.get("uri", "")
-                            result = self.browser_handlers.load_browser_item(
-                                track_index, uri
-                            )
+                            result = self.browser_handlers.load_browser_item(track_index, uri)
                         elif command_type == "load_browser_item":
                             track_index = params.get("track_index", 0)
                             item_uri = params.get("item_uri", "")
-                            result = self.browser_handlers.load_browser_item(
-                                track_index, item_uri
-                            )
+                            result = self.browser_handlers.load_browser_item(track_index, item_uri)
 
                         # Put the result in the queue
-                        response_queue.put({"status": "success", "result": result})
+                        response_queue.put(format_success_response(result))
                     except Exception as e:
                         self.log_message("Error in main thread task: " + str(e))
                         self.log_message(traceback.format_exc())
-                        response_queue.put({"status": "error", "message": str(e)})
+                        response_queue.put(format_error_response(str(e)))
 
                 # Schedule the task to run on the main thread
                 try:
@@ -333,37 +307,25 @@ class AbletonMCP(ControlSurface):
                 # Wait for the response with a timeout
                 try:
                     task_response = response_queue.get(timeout=10.0)
-                    if task_response.get("status") == "error":
-                        response["status"] = "error"
-                        response["message"] = task_response.get(
-                            "message", "Unknown error"
-                        )
-                    else:
-                        response["result"] = task_response.get("result", {})
+                    return task_response
                 except queue.Empty:
-                    response["status"] = "error"
-                    response["message"] = "Timeout waiting for operation to complete"
+                    return format_error_response("Timeout waiting for operation to complete")
             elif command_type == "get_browser_item":
                 uri = params.get("uri", None)
                 path = params.get("path", None)
-                response["result"] = self.browser_handlers.get_browser_item(uri, path)
+                result = self.browser_handlers.get_browser_item(uri, path)
+                return format_success_response(result)
             elif command_type == "get_browser_tree":
                 category_type = params.get("category_type", "all")
-                response["result"] = self.browser_handlers.get_browser_tree(
-                    category_type
-                )
+                result = self.browser_handlers.get_browser_tree(category_type)
+                return format_success_response(result)
             elif command_type == "get_browser_items_at_path":
                 path = params.get("path", "")
-                response["result"] = self.browser_handlers.get_browser_items_at_path(
-                    path
-                )
+                result = self.browser_handlers.get_browser_items_at_path(path)
+                return format_success_response(result)
             else:
-                response["status"] = "error"
-                response["message"] = "Unknown command: " + command_type
+                return format_error_response(f"Unknown command: {command_type}")
         except Exception as e:
             self.log_message("Error processing command: " + str(e))
             self.log_message(traceback.format_exc())
-            response["status"] = "error"
-            response["message"] = str(e)
-
-        return response
+            return format_error_response(str(e))
