@@ -1,0 +1,47 @@
+{
+  "$schema": "https://repomix.com/schema.json",
+  "output": {
+    "filePath": "prompts/generated/repo_{timestamp}.xml",
+    "style": "xml",
+    "headerText": "AI Prompt Ready Repository Content",
+    "removeComments": false,
+    "removeEmptyLines": false,
+    "topFilesLength": 10,
+    "showLineNumbers": true
+  },
+  "include": [],
+  "ignore": {
+    "useGitignore": true,
+    "useDefaultPatterns": true,
+    "customPatterns": [
+      "prompts/generated/**",
+      "tmp/**",
+      "log/**",
+      "*.log",
+      "*.tmp",
+      ".DS_Store",
+      "Thumbs.db",
+      "node_modules/**",
+      ".terraform/**",
+      "*.tfstate*",
+      ".bundle/**",
+      "vendor/bundle/**",
+      "coverage/**",
+      "*.sqlite3*",
+      ".env.*",
+      "config/master.key",
+      "config/credentials/*.key",
+      ".git/**",
+      "*.pid",
+      "*.lock",
+      "yarn.lock",
+      "package-lock.json",
+      "Gemfile.lock"
+    ]
+  },
+  "security": {
+    "enableSecurityCheck": true
+  },
+  "maxFileSize": "1MB",
+  "maxTotalSize": "50MB"
+}

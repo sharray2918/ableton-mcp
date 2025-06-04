@@ -27,6 +27,72 @@ build-backend = "setuptools.build_meta"
 [tool.setuptools]
 packages = ["MCP_Server"]
 
+[dependency-groups]
+dev = [
+    "ruff>=0.8.0",
+    "mypy>=1.13.0",
+    "pytest>=8.4.0",
+    "pre-commit>=4.0.0",
+]
+
+# Ruff設定（高速なlinter/formatter）
+[tool.ruff]
+target-version = "py310"
+line-length = 88
+
+[tool.ruff.lint]
+select = [
+    "E",   # pycodestyle errors
+    "W",   # pycodestyle warnings
+    "F",   # pyflakes
+    "I",   # isort
+]
+ignore = [
+    "E501",  # line too long, handled by formatter
+    "E722",  # bare except (legacy code compatibility)
+    "F401",  # imported but unused (module exports)
+    "F841",  # local variable assigned but never used
+    "W291",  # trailing whitespace (handled by formatter)
+    "W292",  # no newline at end of file (handled by formatter)
+    "W293",  # blank line contains whitespace (handled by formatter)
+]
+
+[tool.ruff.format]
+quote-style = "double"
+indent-style = "space"
+skip-magic-trailing-comma = false
+line-ending = "auto"
+
+[tool.ruff.lint.isort]
+known-first-party = ["MCP_Server", "AbletonMCP_Remote_Script"]
+
+# MyPy設定
+[tool.mypy]
+python_version = "3.10"
+ignore_missing_imports = true
+warn_return_any = false
+warn_unused_configs = true
+disallow_untyped_defs = false
+disallow_incomplete_defs = false
+check_untyped_defs = true
+disallow_untyped_decorators = false
+no_implicit_optional = false
+warn_redundant_casts = true
+warn_unused_ignores = false
+warn_no_return = true
+warn_unreachable = true
+strict_equality = false
+
+[[tool.mypy.overrides]]
+module = "tests.*"
+ignore_errors = true
+
+# Flake8設定（ruffと併用する場合）
+[tool.flake8]
+max-line-length = 88
+extend-ignore = ["E203", "W503"]
+exclude = [".git", "__pycache__", "build", "dist", ".venv"]
+
 [project.urls]
 "Homepage" = "https://github.com/ahujasid/ableton-mcp"
 "Bug Tracker" = "https://github.com/ahujasid/ableton-mcp/issues"

@@ -1,0 +1,109 @@
+{
+  "profiles": {
+    "minimal": {
+      "description": "Core MCP server files only (< 20KB)",
+      "maxTotalSize": "20KB",
+      "include": [
+        "MCP_Server/**/*.py",
+        "pyproject.toml",
+        "README.md"
+      ],
+      "priority": ["MCP_Server/server.py", "pyproject.toml", "README.md"]
+    },
+    "core": {
+      "description": "Essential MCP server and Ableton integration (< 50KB)",
+      "maxTotalSize": "50KB",
+      "include": [
+        "MCP_Server/**/*.py",
+        "AbletonMCP_Remote_Script/**/*.py",
+        "pyproject.toml",
+        "README.md",
+        "uv.lock"
+      ],
+      "exclude": [
+        "**/__pycache__/**",
+        "**/*.pyc",
+        "**/*.pyo"
+      ],
+      "priority": ["MCP_Server", "AbletonMCP_Remote_Script", "pyproject.toml"]
+    },
+    "full": {
+      "description": "Complete codebase excluding generated files (< 100KB)",
+      "maxTotalSize": "100KB",
+      "include": [],
+      "exclude": [
+        "prompts/generated/**",
+        "**/__pycache__/**",
+        "**/*.pyc",
+        "**/*.pyo",
+        "node_modules/**",
+        ".git/**",
+        "*.log",
+        "*.tmp",
+        "tmp/**",
+        "log/**",
+        "coverage/**",
+        ".DS_Store",
+        "Thumbs.db"
+      ],
+      "priority": ["MCP_Server", "AbletonMCP_Remote_Script", "prompts", "pyproject.toml", "README.md"]
+    },
+    "prompts": {
+      "description": "Prompt generation system only (< 40KB)",
+      "maxTotalSize": "40KB",
+      "include": [
+        "prompts/**/*.ts",
+        "prompts/**/*.js",
+        "prompts/**/*.json",
+        "prompts/package.json",
+        "prompts/tsconfig.json",
+        "prompts/README.md"
+      ],
+      "exclude": [
+        "prompts/generated/**",
+        "prompts/node_modules/**",
+        "prompts/pnpm-lock.yaml"
+      ],
+      "priority": ["prompts/scripts", "prompts/types", "prompts/config", "prompts/package.json"]
+    },
+    "config": {
+      "description": "Configuration and documentation files (< 30KB)",
+      "maxTotalSize": "30KB",
+      "include": [
+        "README.md",
+        "*.md",
+        "pyproject.toml",
+        "package.json",
+        "uv.lock",
+        "Dockerfile",
+        "smithery.yaml",
+        ".gitignore",
+        ".python-version",
+        "LICENSE",
+        "prompts/config/**/*.json",
+        "prompts/package.json",
+        "prompts/tsconfig.json"
+      ],
+      "priority": ["README.md", "pyproject.toml", "prompts/config", "Dockerfile"]
+    },
+    "development": {
+      "description": "Development environment setup (< 25KB)",
+      "maxTotalSize": "25KB",
+      "include": [
+        "pyproject.toml",
+        "uv.lock",
+        "package.json",
+        "prompts/package.json",
+        "prompts/pnpm-lock.yaml",
+        "prompts/tsconfig.json",
+        "prompts/.eslintrc.*",
+        "prompts/.prettierrc",
+        "Dockerfile",
+        ".python-version",
+        ".gitignore",
+        "prompts/.gitignore"
+      ],
+      "priority": ["pyproject.toml", "prompts/package.json", "Dockerfile"]
+    }
+  }
+}

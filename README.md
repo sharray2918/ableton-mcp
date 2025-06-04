@@ -89,10 +89,10 @@ uvx ableton-mcp
      `Contents/App-Resources/MIDI Remote Scripts/`
    - Method 2: If it's not there in the first method, use the direct path (replace XX with your version number):
      `/Users/[Username]/Library/Preferences/Ableton/Live XX/User Remote Scripts`
-   
+
    **For Windows:**
    - Method 1:
-     C:\Users\[Username]\AppData\Roaming\Ableton\Live x.x.x\Preferences\User Remote Scripts 
+     C:\Users\[Username]\AppData\Roaming\Ableton\Live x.x.x\Preferences\User Remote Scripts
    - Method 2:
      `C:\ProgramData\Ableton\Live XX\Resources\MIDI Remote Scripts\`
    - Method 3:
